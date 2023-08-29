@@ -25,9 +25,9 @@ const TIMEOUT_MAX = (1000 * 60 * 5) as Types.Milliseconds; // 5 minutes
 const nodes = new SortedCollection(Node.compare);
 
 export type NodeBlockInfo = {
-  networkID: string,
-  nodeName: string,
-  block: number
+    networkID: string,
+    nodeName: string,
+    block: number
 }
 
 export class Connection {
@@ -47,13 +47,14 @@ export class Connection {
 
 
   private static getAddress(): string {
-    return process.env.TELEMETRY_URL || 'wss://telemetry.polkadot.io/feed/'
+    return process.env.TELEMETRY_URL || 'wss://feed.telemetry.polkadot.io/feed'
   }
 
   public static async socket(): Promise<WebSocket> {
     let socket = await Connection.trySocket();
     let timeout = TIMEOUT_BASE;
-
+      console.log('try to establish socket')
+      
     while (!socket) {
       await sleep(timeout);
 
@@ -123,7 +124,8 @@ export class Connection {
       }
 
       const str = Connection.utf8decoder.decode(event.data);
-
+	//console.log(str)
+	
       data = (str as any) as FeedMessage.Data;
     }
 
@@ -139,9 +141,11 @@ export class Connection {
     this.socket.send(`no-more-finality:${chain}`);
   }
 
-  public static handleMessages = (messages: FeedMessage.Message[]) => {
+    public static handleMessages = (messages: FeedMessage.Message[]) => {
+	//console.log("handle messages")
     for (const message of messages) {
-      switch (message.action) {
+	//console.log(message)
+	switch (message.action) {
         case ACTIONS.FeedVersion: {
           if (message.payload !== VERSION) {
             // return this.newVersion();
@@ -218,7 +222,7 @@ export class Connection {
           const id = message.payload;
 
           nodes.remove(id);
-          console.log('RemovedNode: \n\t', id);
+          //console.log('RemovedNode: \n\t', id);
           break;
         }
 
@@ -226,7 +230,7 @@ export class Connection {
           const id = message.payload;
 
           nodes.mutAndSort(id, (node) => node.setStale(true));
-          // console.log('StaleNode: \n\t', id);
+          //console.log('StaleNode: \n\t', id);
           break;
         }
 
@@ -326,7 +330,7 @@ export class Connection {
           // nodes.clear();
 
           // this.appUpdate({ subscribed: message.payload, nodes });
-          console.log('SubscribedTo: \n\t', message.payload);
+          //console.log('SubscribedTo: \n\t', message.payload);
 
           break;
         }
@@ -337,7 +341,7 @@ export class Connection {
 
           //   this.appUpdate({ subscribed: null, nodes });
           // }
-          console.log('UnsubscribedFrom: \n\t', message.payload);
+          //console.log('UnsubscribedFrom: \n\t', message.payload);
           break;
         }
 

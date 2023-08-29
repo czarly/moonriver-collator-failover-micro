@@ -7,9 +7,8 @@ const testingMode = process.env.TESTING_MODE == 'true'
 export async function providePolkadotApi() {
     let api
     const wsEndpoints = [
-        'wss://wss.moonriver.moonbeam.network',
-        'wss://moonriver.api.onfinality.io/public-ws',
-        'wss://moonriver.kusama.elara.patract.io'
+	'wss://wss.api.moonbeam.network',
+	'wss://moonbeam.api.onfinality.io/public-ws'
     ]
     let wsIndex = 0;
     while (true) {
